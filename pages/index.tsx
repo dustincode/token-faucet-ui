@@ -36,8 +36,23 @@ const TOKENS = {
   ],
 };
 
-const EXPLORER = {
-  'GOERLI': 'https://goerli.etherscan.io/tx/'
+const CONTRACT_ADDRESSES: { [key: string]: { [key: string]: string } } = {
+  "USDT": { "GOERLI": "0x77Ff079c57cB5b84Bc30b1cA9b9773c158220c9c" },
+  "USDC": { "GOERLI": "0x935308fb0b9fF41f3878cf9957BD7cD0F18E2B36" },
+  "AAVE": { "GOERLI": "0xb4623474E3fD71687aD82d8eE8cBb2e650d21C84" },
+  "AXS": { "GOERLI": "0xe8a2D9Aec548fB19C8B42d86C44BF868abd75d89" },
+  "CRV": { "GOERLI": "0x70C07277a9f581bE216ED13D78d048B403894Ea3" },
+  "UNI": { "GOERLI": "0x23183A639491aeb7A82FF4CCA38FD06b6bd9780E" },
+  "DAI": { "GOERLI": "0xDE40AFBa2F658A8D06498f5BFD22f07129cBb413" },
+  "MANA": { "GOERLI": "0xfea165cDEe7d818e896FDDf622faE71420877BDD" },
+  "USDP": { "GOERLI": "0xBE307774aB1D0FBC60E77cC6fdED0A5ed75c801B" },
+  "PAXG": { "GOERLI": "0x6351b954418E5bb7fbD23f8BaC850536e5e0Df93" },
+  "SAND": { "GOERLI": "0x15C387B8d50bb14411750385476CB979CE3BeB27" },
+  "SUSHI": { "GOERLI": "0x0171DE785445F5460AA864bEDfFf3082149DD4DE" }
+};
+
+const EXPLORER: { [key: string]: string } = {
+  'GOERLI': 'https://goerli.etherscan.io'
 };
 
 export default function Home() {
@@ -57,7 +72,10 @@ export default function Home() {
       api
         .get(`api/erc20/token-balance?token=${token}&network=${network}`)
         .then(response => setCurrentBalance(Number(response.data.balance).toFixed(0)))
-        .catch(error => console.error(error));
+        .catch(error => {
+          console.error(error)
+          setCurrentBalance('0');
+        });
     }, 5000);
 
     return () => clearInterval(interval);
@@ -99,7 +117,7 @@ export default function Home() {
       <Head>
         <title>Token Faucet Sparkminds</title>
         <meta name="description" content="Token Faucet" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/logo_new.png" />
       </Head>
 
       <main className={styles.main}>
@@ -116,7 +134,7 @@ export default function Home() {
             </Toast.Header>
             <Toast.Body className="text-white">
               <a
-                href={`${EXPLORER[network as keyof typeof EXPLORER]}${hash}`}
+                href={`${EXPLORER[network]}/tx/${hash}`}
                 target="_blank"
                 rel="noreferrer"
                 className="text-white"
@@ -151,6 +169,14 @@ export default function Home() {
               <Form.Select placeholder="Choose token" defaultValue={token} onChange={onTokenChange}>
                 {tokens.map((token, index) => (<option key={index} value={token.value}>{token.label}</option>))}
               </Form.Select>
+              <Form.Text>
+                <a
+                  href={`${EXPLORER[network]}/token/${CONTRACT_ADDRESSES[token][network]}`}
+                  target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}
+                >
+                  View Contract
+                </a>
+            </Form.Text>
             </Form.Group>
           </Row>
           
