@@ -34,11 +34,15 @@ const TOKENS = {
     { value: 'USDP', label: 'USDP (Pax Dollar)' },
     { value: 'PAXG', label: 'PAXG (Paxos Gold)' },
   ],
+  'BEP20': [
+    { value: 'USDT', label: 'USDT (Tether USD)' },
+    { value: 'USDC', label: 'USDC (USD Coin)' },
+  ]
 };
 
 const CONTRACT_ADDRESSES: { [key: string]: { [key: string]: string } } = {
-  "USDT": { "GOERLI": "0x77Ff079c57cB5b84Bc30b1cA9b9773c158220c9c" },
-  "USDC": { "GOERLI": "0x935308fb0b9fF41f3878cf9957BD7cD0F18E2B36" },
+  "USDT": { "GOERLI": "0x77Ff079c57cB5b84Bc30b1cA9b9773c158220c9c", "BEP20": "0x7E47bDfa89cBEB3400D9CA2Fa38f9C64E54b8470" },
+  "USDC": { "GOERLI": "0x935308fb0b9fF41f3878cf9957BD7cD0F18E2B36", "BEP20": "0x1B2bd0Ea5d4B7442617405c4632280668aDeA541" },
   "AAVE": { "GOERLI": "0xb4623474E3fD71687aD82d8eE8cBb2e650d21C84" },
   "AXS": { "GOERLI": "0xe8a2D9Aec548fB19C8B42d86C44BF868abd75d89" },
   "CRV": { "GOERLI": "0x70C07277a9f581bE216ED13D78d048B403894Ea3" },
@@ -52,7 +56,8 @@ const CONTRACT_ADDRESSES: { [key: string]: { [key: string]: string } } = {
 };
 
 const EXPLORER: { [key: string]: string } = {
-  'GOERLI': 'https://goerli.etherscan.io'
+  'GOERLI': 'https://goerli.etherscan.io',
+  'BEP20': 'https://testnet.bscscan.com'
 };
 
 export default function Home() {
@@ -70,7 +75,7 @@ export default function Home() {
   useEffect(() => {
     const interval = setInterval(() => {
       api
-        .get(`api/erc20/token-balance?token=${token}&network=${network}`)
+        .get(`api/${network === 'BEP20' ? 'bep20' : 'erc20'}/token-balance?token=${token}&network=${network}`)
         .then(response => setCurrentBalance(Number(response.data.balance).toFixed(0)))
         .catch(error => {
           console.error(error)
@@ -98,7 +103,7 @@ export default function Home() {
   const onSubmitFaucet = useCallback(() => {
     setLoading(true);
     api
-      .post('api/erc20/faucet', { token, network, address })
+      .post(`api/${network === 'BEP20' ? 'bep20' : 'erc20'}/faucet`, { token, network, address })
       .then(response => {
         setHash(response.data.hash);
         setLoading(false);
@@ -161,6 +166,7 @@ export default function Home() {
               <Form.Label>Network</Form.Label>
               <Form.Select placeholder="Choose network" defaultValue={network} onChange={onNetworkChange}>
                 <option value='GOERLI'>Ethereum (Goerli)</option>
+                <option value='BEP20'>Binance Smart Chain (BEP20)</option>
               </Form.Select>
             </Form.Group>
 
