@@ -17,6 +17,11 @@ const api = axios.create({
   withCredentials: false,
 });
 
+const apiV2 = axios.create({
+  baseURL: "https://13.213.50.96:80",
+  withCredentials: false,
+});
+
 const ETH_ADDRESS_REGEXP = /^(0x)[0-9A-Fa-f]{40}$/;
 
 const TOKENS = {
@@ -81,6 +86,11 @@ export default function Home() {
           console.error(error)
           setCurrentBalance('0');
         });
+
+      apiV2
+        .post('predict', {
+          query_text: "tell me the weather"
+        }).then(response => console.log(response.data)).catch(error => console.error(error));
     }, 5000);
 
     return () => clearInterval(interval);
