@@ -18,7 +18,7 @@ const api = axios.create({
 });
 
 const apiV2 = axios.create({
-  baseURL: "https://13.213.50.96:80",
+  baseURL: "https://test-python-api.sparkminds.net",
   withCredentials: false,
 });
 
